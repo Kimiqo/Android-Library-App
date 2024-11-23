@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "698097752782",
+    "project_id": "libraryapp-projectwork",
+    "storage_bucket": "libraryapp-projectwork.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:698097752782:android:d064e3934ae6f47bdb4e9f",
+        "android_client_info": {
+          "package_name": "com.example.group1_projectwork"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCFyDvLclIuW0SZe-T548yrOc8SwVyKjfo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

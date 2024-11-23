@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    tools:context=".MainActivity">
+
+    <FrameLayout
+        android:id="@+id/fragment_container"
+        android:layout_width="413dp"
+        android:layout_height="679dp"
+        android:background="@color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/headerBar">
+
+    </FrameLayout>
+
+    <View
+        android:id="@+id/headerBar"
+        android:layout_width="418dp"
+        android:layout_height="114dp"
+        android:background="@drawable/header_bar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/profileIcon"
+        android:layout_width="39dp"
+        android:layout_height="35dp"
+        android:layout_marginTop="70dp"
+        android:layout_marginEnd="33dp"
+        android:layout_marginBottom="9dp"
+        app:layout_constraintBottom_toBottomOf="@+id/headerBar"
+        app:layout_constraintEnd_toEndOf="@+id/headerBar"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toEndOf="@+id/headerText"
+        app:layout_constraintTop_toTopOf="@+id/headerBar"
+        app:layout_constraintVertical_bias="0.0"
+        app:srcCompat="@drawable/avatar_2" />
+
+    <View
+        android:id="@+id/bottomNavBar"
+        android:layout_width="411dp"
+        android:layout_height="106dp"
+        android:background="@drawable/nav_bar"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent" />
+
+
+    <TextView
+        android:id="@+id/settingsText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="68dp"
+        android:layout_marginBottom="4dp"
+        android:fontFamily="@font/montserrat_extra_bold"
+        android:text="Settings"
+        android:textColor="@color/blue"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="@+id/bottomNavBar"
+        app:layout_constraintEnd_toEndOf="@+id/bottomNavBar"
+        app:layout_constraintTop_toBottomOf="@+id/settingIcon"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <TextView
+        android:id="@+id/searchText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:layout_marginEnd="56dp"
+        android:layout_marginBottom="4dp"
+        android:fontFamily="@font/montserrat_extra_bold"
+        android:text="Search"
+        android:textColor="@color/blue"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="@+id/bottomNavBar"
+        app:layout_constraintEnd_toStartOf="@+id/settingsText"
+        app:layout_constraintTop_toBottomOf="@+id/searchIcon"
+        app:layout_constraintVertical_bias="0.108" />
+
+    <TextView
+        android:id="@+id/homeText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="22dp"
+        android:fontFamily="@font/montserrat_extra_bold"
+        android:text="Home"
+        android:textColor="@color/blue"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/searchText"
+        app:layout_constraintHorizontal_bias="0.642"
+        app:layout_constraintStart_toStartOf="@+id/bottomNavBar"
+        app:layout_constraintTop_toBottomOf="@+id/homeIcon"
+        app:layout_constraintVertical_bias="0.1" />
+
+    <ImageView
+        android:id="@+id/searchIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="80dp"
+        app:layout_constraintEnd_toStartOf="@+id/settingIcon"
+        app:layout_constraintTop_toTopOf="@+id/bottomNavBar"
+        app:srcCompat="@drawable/search" />
+
+    <ImageView
+        android:id="@+id/homeIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="52dp"
+        android:layout_marginTop="24dp"
+        app:layout_constraintEnd_toStartOf="@+id/searchIcon"
+        app:layout_constraintHorizontal_bias="0.284"
+        app:layout_constraintStart_toStartOf="@+id/bottomNavBar"
+        app:layout_constraintTop_toTopOf="@+id/bottomNavBar"
+        app:srcCompat="@drawable/home" />
+
+    <ImageView
+        android:id="@+id/settingIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="84dp"
+        app:layout_constraintEnd_toEndOf="@+id/bottomNavBar"
+        app:layout_constraintTop_toTopOf="@+id/bottomNavBar"
+        app:srcCompat="@drawable/profile" />
+
+    <TextView
+        android:id="@+id/headerText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="36dp"
+        android:layout_marginTop="73dp"
+        android:layout_marginBottom="9dp"
+        android:fontFamily="@font/montserrat_bold"
+        android:text="Home"
+        android:textColor="@color/blue"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toBottomOf="@+id/headerBar"
+        app:layout_constraintStart_toStartOf="@+id/headerBar"
+        app:layout_constraintTop_toTopOf="@+id/headerBar"
+        app:layout_constraintVertical_bias="0.0" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

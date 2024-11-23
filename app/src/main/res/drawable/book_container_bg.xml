@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Simulated shadow using gradient -->
+    <gradient
+        android:startColor="#000000"
+        android:endColor="#00000000"
+        android:angle="90" />
+
+    <!-- Rounded corners -->
+    <corners android:radius="8dp" />
+
+    <!-- Border/stroke -->
+    <stroke
+        android:width="2dp"
+        android:color="@color/blue" />
+
+    <!-- Background color -->
+    <solid android:color="@color/lightBlue"/>
+</shape>
