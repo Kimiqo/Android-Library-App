@@ -3,6 +3,7 @@ package com.example.group1_projectwork;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -15,10 +16,30 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import java.util.UUID;
 
 public class AddBookDialogFragment extends DialogFragment {
+
+    private OnDismissListener onDismissListener;
+
+    // Call this method to set the listener from Fg_mainPage
+    public void setOnDismissListener(OnDismissListener listener) {
+        this.onDismissListener = listener;
+    }
+
+    @Override
+    public void onDismiss(@NonNull DialogInterface dialog) {
+        super.onDismiss(dialog);
+        if (onDismissListener != null) {
+            onDismissListener.onDismiss();
+        }
+    }
+
+    public interface OnDismissListener {
+        void onDismiss();
+    }
 
     // Define the listener interface
     public interface OnBookAddedListener {
@@ -78,12 +99,13 @@ public class AddBookDialogFragment extends DialogFragment {
             return;
         }
 
-        Book book = new Book(UUID.randomUUID().toString(), title, author, pdfUri.toString(), "1"); // Use mock userId
+        Book book = new Book(UUID.randomUUID().toString(), title, author, pdfUri.toString(), "1"); // Mock userId
         boolean success = dbHelper.addBook(book);
         if (success) {
-            if (listener != null) {
-                listener.onBookAdded(book);  // Notify the activity (MainScreen) that a book has been added
-            }
+            // Update the ViewModel with the new book
+            SharedViewModel viewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
+            viewModel.addBook(book); // Notify ViewModel about the new book
+
             dismiss();
             Toast.makeText(getContext(), "Book added successfully!", Toast.LENGTH_SHORT).show();
         } else {

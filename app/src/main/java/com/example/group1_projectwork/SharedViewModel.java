@@ -1,19 +1,28 @@
 package com.example.group1_projectwork;
 
-import android.net.Uri;
-
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-public class SharedViewModel extends ViewModel {
-    private final MutableLiveData<Uri> imageUri = new MutableLiveData<>();
+import java.util.ArrayList;
+import java.util.List;
 
-    public LiveData<Uri> getImageUri() {
-        return imageUri;
+public class SharedViewModel extends ViewModel {
+    private final MutableLiveData<List<Book>> booksLiveData = new MutableLiveData<>(new ArrayList<>());
+
+    public LiveData<List<Book>> getBooksLiveData() {
+        return booksLiveData;
     }
 
-    public void setImageUri(Uri uri) {
-        imageUri.setValue(uri);  // Update the URI in LiveData
+    public void setBooks(List<Book> books) {
+        booksLiveData.setValue(books);
+    }
+
+    public void addBook(Book book) {
+        if (booksLiveData.getValue() != null) {
+            List<Book> currentBooks = new ArrayList<>(booksLiveData.getValue());
+            currentBooks.add(book);
+            booksLiveData.setValue(currentBooks);
+        }
     }
 }

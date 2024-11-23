@@ -54,7 +54,7 @@ public class BookGridAdapter extends BaseAdapter {
     public void updateBooks(List<Book> newBooks) {
         this.books.clear();
         this.books.addAll(newBooks);
-        notifyDataSetChanged(); // Notify that the data has changed
+        notifyDataSetChanged();
     }
 
 }

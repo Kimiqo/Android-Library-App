@@ -12,13 +12,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
+import java.util.List;
 
 public class MainScreen extends AppCompatActivity implements AddBookDialogFragment.OnBookAddedListener {
 
     private ImageView homeIcon, searchIcon, settingsIcon, headerImage;
     private TextView headerTitle;
     private Fragment homeFragment, searchFragment, settingsFragment;
-    private SharedViewModel sharedViewModel;
+    private SharedViewModel viewModel;
 
     private SQLiteHelper dbHelper; // SQLite Helper instance
 
@@ -32,6 +33,12 @@ public class MainScreen extends AppCompatActivity implements AddBookDialogFragme
 
         setContentView(R.layout.activity_main);
 
+        // Load books into SharedViewModel
+        SQLiteHelper dbHelper = new SQLiteHelper(this);
+        List<Book> books = dbHelper.getAllBooks();
+        viewModel = new ViewModelProvider(this).get(SharedViewModel.class);
+        viewModel.setBooks(books);
+
         // Initialize views first
         headerImage = findViewById(R.id.profileIcon);
         headerTitle = findViewById(R.id.headerText);
@@ -39,21 +46,22 @@ public class MainScreen extends AppCompatActivity implements AddBookDialogFragme
         searchIcon = findViewById(R.id.searchIcon);
         settingsIcon = findViewById(R.id.settingIcon);
 
+        // Initialize SQLite helper
+        dbHelper = new SQLiteHelper(this);
 
-        dbHelper = new SQLiteHelper(this); // Initialize SQLite helper
-
+        // Initialize fragments
         homeFragment = new Fg_mainPage();
         searchFragment = new Fg_searchPage();
         settingsFragment = new Fg_settingsPage();
 
-        loadFragment(homeFragment);
-        headerTitle.setText("Home");
+        // Load the home fragment by default
+        if (savedInstanceState == null) {
+            loadFragment(homeFragment);
+        }
 
-        sharedViewModel = new ViewModelProvider(this).get(SharedViewModel.class);
-
+        // Setup navigation
         setupNavigation();
     }
-
 
     private void loadFragment(Fragment fragment) {
         FragmentManager fragmentManager = getSupportFragmentManager();
@@ -64,11 +72,11 @@ public class MainScreen extends AppCompatActivity implements AddBookDialogFragme
                     .replace(R.id.fragment_container, fragment)
                     .commit();
         }
-
-        // Always reload books when returning to Home Fragment
-        if (fragment == homeFragment) {
-            ((Fg_mainPage) homeFragment).reloadBooks();
-        }
+//
+//        // Always reload books when returning to Home Fragment
+//        if (fragment == homeFragment) {
+//            ((Fg_mainPage) homeFragment).reloadBooks();
+//        }
     }
 
     @Override
