@@ -39,6 +39,10 @@ public class Fg_mainPage extends Fragment {
 
         bookGridView = view.findViewById(R.id.bookGridView);
 
+        // Set up the adapter
+        bookGridAdapter = new BookGridAdapter(requireContext(), new ArrayList<>(books)); // Initially show all books
+        bookGridView.setAdapter(bookGridAdapter);
+
         // Initialize the SharedViewModel
         sharedViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
 
