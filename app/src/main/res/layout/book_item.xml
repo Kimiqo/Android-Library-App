@@ -12,7 +12,8 @@
         android:id="@+id/bookImage"
         android:layout_width="100dp"
         android:layout_height="150dp"
-        android:src="@drawable/default_book_img" />
+        android:layout_gravity="center"
+        android:src="@drawable/booklyft2" />
 
     <!-- Book Title -->
     <TextView
