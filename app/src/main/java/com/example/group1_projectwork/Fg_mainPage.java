@@ -66,7 +66,7 @@ public class Fg_mainPage extends Fragment {
     public void loadBooksFromSQLite() {
         books.clear(); // Clear the current list
         if (dbHelper != null) {
-            List<Book> fetchedBooks = dbHelper.getAllBooks(); // Fetch books from SQLite
+            List<Book> fetchedBooks = dbHelper.getAllBooks(requireContext()); // Fetch books from SQLite
             Log.d("Fg_mainPage", "Fetched books: " + fetchedBooks.size());
             books.addAll(fetchedBooks); // Add fetched books to the list
         } else {
@@ -89,7 +89,7 @@ public class Fg_mainPage extends Fragment {
 
     public void reloadBooks() {
         if (dbHelper != null) {
-            List<Book> fetchedBooks = dbHelper.getAllBooks();
+            List<Book> fetchedBooks = dbHelper.getAllBooks(requireContext());
             bookGridAdapter.updateBooks(fetchedBooks);
         } else {
             Log.e("Fg_mainPage", "SQLiteHelper is not initialized.");

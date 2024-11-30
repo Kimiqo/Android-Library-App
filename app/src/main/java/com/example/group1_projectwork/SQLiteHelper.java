@@ -2,6 +2,7 @@ package com.example.group1_projectwork;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -14,6 +15,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "app_library.db";
     private static final int DATABASE_VERSION = 1;
+    private static final String USER_SESSION_PREF = "UserSession";
 
     public SQLiteHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -21,9 +23,20 @@ public class SQLiteHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        // Create table with userID, username, and password
-        db.execSQL("CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT, password TEXT)");
-        db.execSQL("CREATE TABLE books (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, author TEXT, pdfUri TEXT, userId INTEGER)");
+        // Create the users table
+        db.execSQL("CREATE TABLE users (" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "username TEXT, " +
+                "password TEXT)");
+
+        // Create the books table with a foreign key reference to users
+        db.execSQL("CREATE TABLE books (" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "title TEXT, " +
+                "author TEXT, " +
+                "pdfUri TEXT, " +
+                "userId INTEGER, " +
+                "FOREIGN KEY(userId) REFERENCES users(id))");
     }
 
     @Override
@@ -33,7 +46,8 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public boolean addUser(User user) {
+    // Add a new user to the database
+    public boolean addUser(User user, Context context) {
         SQLiteDatabase db = null;
         try {
             db = this.getWritableDatabase();
@@ -45,6 +59,13 @@ public class SQLiteHelper extends SQLiteOpenHelper {
 
             if (result != -1) {
                 user.setUserID(String.valueOf(result));  // Set the generated userID in the User object
+
+                // Save the logged-in user's ID in SharedPreferences
+                SharedPreferences prefs = context.getSharedPreferences(USER_SESSION_PREF, Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.putString("loggedInUserID", String.valueOf(result));
+                editor.apply();
+
                 return true;
             } else {
                 Log.e("SQLiteHelper", "Failed to insert user");
@@ -58,25 +79,44 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         return false;
     }
 
-
-
-    // Add a book (keeping userId as foreign key)
-    public boolean addBook(Book book) {
+    // Add a new book linked to the currently logged-in user
+    public boolean addBook(Book book, Context context) {
         SQLiteDatabase db = this.getWritableDatabase();
+
+        // Retrieve the logged-in user's ID from SharedPreferences
+        SharedPreferences prefs = context.getSharedPreferences(USER_SESSION_PREF, Context.MODE_PRIVATE);
+        String loggedInUserID = prefs.getString("loggedInUserID", null);
+
+        if (loggedInUserID == null) {
+            Log.e("SQLiteHelper", "No logged-in user found");
+            return false;
+        }
+
         ContentValues values = new ContentValues();
         values.put("title", book.getTitle());
         values.put("author", book.getAuthor());
         values.put("pdfUri", book.getPdfUri());
-        values.put("userId", book.getUserId()); // Assuming UserId is passed when adding a book
+        values.put("userId", loggedInUserID); // Link to the logged-in user
+
         long result = db.insert("books", null, values);
         return result != -1;
     }
 
-    // Get all books from the database
-    public List<Book> getAllBooks() {
+    // Get all books added by the currently logged-in user
+    public List<Book> getAllBooks(Context context) {
         List<Book> books = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT * FROM books", null);
+
+        // Retrieve the logged-in user's ID from SharedPreferences
+        SharedPreferences prefs = context.getSharedPreferences(USER_SESSION_PREF, Context.MODE_PRIVATE);
+        String loggedInUserID = prefs.getString("loggedInUserID", null);
+
+        if (loggedInUserID == null) {
+            Log.e("SQLiteHelper", "No logged-in user found");
+            return books;
+        }
+
+        Cursor cursor = db.rawQuery("SELECT * FROM books WHERE userId = ?", new String[]{loggedInUserID});
         if (cursor.moveToFirst()) {
             do {
                 books.add(new Book(
@@ -84,7 +124,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
                         cursor.getString(1),
                         cursor.getString(2),
                         cursor.getString(3),
-                        cursor.getString(4) // assuming userId is an integer
+                        cursor.getString(4)
                 ));
             } while (cursor.moveToNext());
         }
@@ -92,51 +132,75 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         return books;
     }
 
-    // Check user credentials using username and password
-    public boolean checkUserCredentials(String username, String password) {
+    // Validate user credentials and log in the user
+    public boolean checkUserCredentials(String username, String password, Context context) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT * FROM users WHERE username = ? AND password = ?",
                 new String[]{username, password});
-        boolean userExists = cursor.moveToFirst();  // If user exists, moveToFirst will return true
+
+        if (cursor.moveToFirst()) {
+            // Save the logged-in user's ID in SharedPreferences
+            String userID = cursor.getString(0);
+            SharedPreferences prefs = context.getSharedPreferences(USER_SESSION_PREF, Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putString("loggedInUserID", userID);
+            editor.apply();
+
+            cursor.close();
+            return true;
+        }
+
         cursor.close();
-        return userExists;
+        return false;
     }
 
-    // Method to check if a user exists in the database
+    // Check if there is any registered user in the database
     public boolean isUserRegistered() {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT * FROM users LIMIT 1", null);
-
-        // If there is at least one user, it will return true
         boolean userExists = cursor.getCount() > 0;
         cursor.close();
         return userExists;
     }
 
-    public User getUserByUserID(String userID) {
+    // Delete a book by its ID
+    public boolean deleteBook(String bookId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        int rowsDeleted = db.delete("books", "id = ?", new String[]{bookId});
+        db.close();
+        return rowsDeleted > 0; // Return true if at least one row was deleted
+    }
+
+    // Get the username of the logged-in user
+    public String getLoggedInUsername(Context context) {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query("users", new String[]{"id", "username", "password"},
-                "id=?", new String[]{userID}, null, null, null);
 
-        if (cursor != null && cursor.moveToFirst()) {
-            int idIndex = cursor.getColumnIndex("id");
-            int usernameIndex = cursor.getColumnIndex("username");
-            int passwordIndex = cursor.getColumnIndex("password");
+        // Retrieve the logged-in user's ID from SharedPreferences
+        SharedPreferences prefs = context.getSharedPreferences(USER_SESSION_PREF, Context.MODE_PRIVATE);
+        String loggedInUserID = prefs.getString("loggedInUserID", null);
 
-            // Check if the column indices are valid
-            if (idIndex != -1 && usernameIndex != -1 && passwordIndex != -1) {
-                String id = cursor.getString(idIndex);
-                String username = cursor.getString(usernameIndex);
-                String password = cursor.getString(passwordIndex);
-                cursor.close();
-                return new User(id, username, password);
-            } else {
-                cursor.close();
-                return null; // Return null if any column index is invalid
-            }
+        if (loggedInUserID == null) {
+            Log.e("SQLiteHelper", "No logged-in user found");
+            return null;
+        }
+
+        // Query the database to get the username
+        Cursor cursor = db.rawQuery("SELECT username FROM users WHERE id = ?", new String[]{loggedInUserID});
+        String username = null;
+        if (cursor.moveToFirst()) {
+            username = cursor.getString(0); // Retrieve the username
         }
         cursor.close();
-        return null; // Return null if no user found
+        return username;
     }
+
+    public Cursor searchBooks(String query) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String searchQuery = "SELECT * FROM books WHERE title LIKE ? OR author LIKE ?";
+        String wildcardQuery = "%" + query + "%";
+        return db.rawQuery(searchQuery, new String[]{wildcardQuery, wildcardQuery});
+    }
+
+
 
 }

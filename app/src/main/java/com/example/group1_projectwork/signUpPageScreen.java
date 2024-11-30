@@ -44,7 +44,7 @@ public class signUpPageScreen extends AppCompatActivity {
         User newUser = new User(userName, password);
 
         // Try to add the user to the database
-        boolean success = dbHelper.addUser(newUser);
+        boolean success = dbHelper.addUser(newUser, this);
 
         if (success) {
             Toast.makeText(this, "User registered successfully", Toast.LENGTH_SHORT).show();

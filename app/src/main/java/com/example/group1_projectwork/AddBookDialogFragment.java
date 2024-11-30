@@ -100,7 +100,7 @@ public class AddBookDialogFragment extends DialogFragment {
         }
 
         Book book = new Book(UUID.randomUUID().toString(), title, author, pdfUri.toString(), "1"); // Mock userId
-        boolean success = dbHelper.addBook(book);
+        boolean success = dbHelper.addBook(book, getContext());
         if (success) {
             // Update the ViewModel with the new book
             SharedViewModel viewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);

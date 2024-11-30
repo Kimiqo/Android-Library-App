@@ -10,11 +10,22 @@
         android:layout_marginTop="60dp"/>
 
     <SearchView
-        android:layout_width="336dp"
+        android:id="@+id/searchView"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="7dp"
-        android:background="@color/grey"
+        android:layout_margin="10dp"
         android:iconifiedByDefault="false"
-        android:queryHint="Search" />
+        android:queryHint="Search by title or author" />
+
+    <GridView
+        android:id="@+id/bookGridView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:numColumns="3"
+        android:verticalSpacing="10dp"
+        android:horizontalSpacing="10dp"
+        android:layout_marginTop="60dp"
+        android:padding="10dp" />
+
 </FrameLayout>

@@ -24,12 +24,13 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 public class Fg_settingsPage extends Fragment {
 
     private static final int STORAGE_PERMISSION_CODE = 101;
     private ImageView profileImageView;
-    private Button logOutButton;
+    private Button logOutButton, helpButton;
     private SQLiteHelper dbHelper;
 
     private final ActivityResultLauncher<Intent> galleryLauncher = registerForActivityResult(
@@ -38,6 +39,8 @@ public class Fg_settingsPage extends Fragment {
                 if (result.getResultCode() == getActivity().RESULT_OK && result.getData() != null) {
                     Uri imageUri = result.getData().getData();
                     profileImageView.setImageURI(imageUri);
+                    SharedViewModel sharedViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
+                    sharedViewModel.setProfileImageUri(imageUri);
                     // Save the URI to SharedPreferences for persistence
                     SharedPreferences sharedPreferences = requireContext().getSharedPreferences("ProfilePrefs", Context.MODE_PRIVATE);
                     SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -74,9 +77,18 @@ public class Fg_settingsPage extends Fragment {
 
         profileImageView = view.findViewById(R.id.imageView2);
         logOutButton = view.findViewById(R.id.logOutButton);
+        TextView settingsUsername = view.findViewById(R.id.settingsUsername);
 
-        // Initialize SQLite helper
+        // Initialize SQLiteHelper
         dbHelper = new SQLiteHelper(requireContext());
+
+        // Retrieve and display the username
+        String username = dbHelper.getLoggedInUsername(requireContext());
+        if (username != null) {
+            settingsUsername.setText(username);
+        } else {
+            settingsUsername.setText("Guest"); // Fallback if no user is logged in
+        }
 
         profileImageView.setOnClickListener(v -> showImageOptionsDialog());
         logOutButton.setOnClickListener(v -> logOut());
@@ -134,6 +146,7 @@ public class Fg_settingsPage extends Fragment {
         startActivity(intent);
         requireActivity().finish(); // Close the current activity
     }
+
 
 //    private void saveUserSettings() {
 //        String name = editTextName.getText().toString().trim();

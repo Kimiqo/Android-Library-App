@@ -20,7 +20,6 @@ public class MainScreen extends AppCompatActivity implements AddBookDialogFragme
     private TextView headerTitle;
     private Fragment homeFragment, searchFragment, settingsFragment;
     private SharedViewModel viewModel;
-
     private SQLiteHelper dbHelper; // SQLite Helper instance
 
     @Override
@@ -34,10 +33,9 @@ public class MainScreen extends AppCompatActivity implements AddBookDialogFragme
         setContentView(R.layout.activity_main);
 
         // Load books into SharedViewModel
-        SQLiteHelper dbHelper = new SQLiteHelper(this);
-        List<Book> books = dbHelper.getAllBooks();
+        dbHelper = new SQLiteHelper(this);
         viewModel = new ViewModelProvider(this).get(SharedViewModel.class);
-        viewModel.setBooks(books);
+        viewModel.setBooks(dbHelper.getAllBooks(this));
 
         // Initialize views first
         headerImage = findViewById(R.id.profileIcon);
@@ -65,18 +63,13 @@ public class MainScreen extends AppCompatActivity implements AddBookDialogFragme
 
     private void loadFragment(Fragment fragment) {
         FragmentManager fragmentManager = getSupportFragmentManager();
-        Fragment currentFragment = fragmentManager.findFragmentById(R.id.fragment_container);
-
-        if (currentFragment != fragment) {
-            fragmentManager.beginTransaction()
+        if (!fragmentManager.getFragments().contains(fragment)) {
+            fragmentManager
+                    .beginTransaction()
                     .replace(R.id.fragment_container, fragment)
+                    .addToBackStack(null) // Optional, if you want back navigation
                     .commit();
         }
-//
-//        // Always reload books when returning to Home Fragment
-//        if (fragment == homeFragment) {
-//            ((Fg_mainPage) homeFragment).reloadBooks();
-//        }
     }
 
     @Override
@@ -86,7 +79,7 @@ public class MainScreen extends AppCompatActivity implements AddBookDialogFragme
             return;
         }
 
-        boolean success = dbHelper.addBook(book); // Save to SQLite
+        boolean success = dbHelper.addBook(book, this); // Save to SQLite
         if (success) {
             Toast.makeText(this, "Book added successfully!", Toast.LENGTH_SHORT).show();
             ((Fg_mainPage) homeFragment).reloadBooks(); // Refresh books
@@ -125,30 +118,4 @@ public class MainScreen extends AppCompatActivity implements AddBookDialogFragme
         });
     }
 
-//    private void loadFragment(Fragment fragment) {
-//        FragmentManager fragmentManager = getSupportFragmentManager();
-//        Fragment currentFragment = fragmentManager.findFragmentById(R.id.fragment_container);
-//
-//        if (currentFragment != fragment) {
-//            fragmentManager.beginTransaction()
-//                    .replace(R.id.fragment_container, fragment)
-//                    .commit();
-//        }
-//    }
-
-//    @Override
-//    public void onBookAdded(Book book) {
-//        if (book.getTitle().isEmpty() || book.getAuthor().isEmpty() || book.getPdfUri() == null) {
-//            Toast.makeText(this, "Please provide valid book details", Toast.LENGTH_SHORT).show();
-//            return;
-//        }
-//
-//        boolean success = dbHelper.addBook(book); // Save to SQLite
-//        if (success) {
-//            Toast.makeText(this, "Book added successfully!", Toast.LENGTH_SHORT).show();
-//            ((Fg_mainPage) homeFragment).reloadBooks(); // Refresh books
-//        } else {
-//            Toast.makeText(this, "Failed to add book", Toast.LENGTH_SHORT).show();
-//        }
-//    }
 }

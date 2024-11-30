@@ -63,7 +63,7 @@ public class loginPageScreen extends AppCompatActivity {
 
     private boolean authenticateUser(String username, String password) {
         // Check if the user exists in the SQLite database
-        return dbHelper.checkUserCredentials(username, password);
+        return dbHelper.checkUserCredentials(username, password, this);
     }
 
     public void signUpPage(View view) {
