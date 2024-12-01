@@ -100,8 +100,8 @@ public class Fg_searchPage extends Fragment {
         try {
             Intent intent = new Intent(Intent.ACTION_VIEW);
             intent.setDataAndType(Uri.parse(pdfUri), "application/pdf");
-            intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY | Intent.FLAG_GRANT_READ_URI_PERMISSION);
-            intent.setPackage("com.google.android.apps.docs"); // Drive PDF Viewer
+            intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY & Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            intent.setPackage("com.gappstudios.autowifi3gdataswitch.san.basicpdfviewer"); // Drive PDF Viewer
 
             startActivity(intent);
         } catch (Exception e) {

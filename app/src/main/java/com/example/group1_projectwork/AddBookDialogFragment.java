@@ -85,10 +85,13 @@ public class AddBookDialogFragment extends DialogFragment {
     }
 
     private void selectPdf() {
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT); // ACTION_OPEN_DOCUMENT for persistable URIs
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
         intent.setType("application/pdf");
-        startActivityForResult(intent, 1001);  // Request code 1001 for PDF selection
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
+        startActivityForResult(intent, 1001);
     }
+
 
     private void addBook() {
         String title = editTextTitle.getText().toString().trim();
@@ -120,7 +123,17 @@ public class AddBookDialogFragment extends DialogFragment {
 
         if (requestCode == 1001 && resultCode == Activity.RESULT_OK && data != null) {
             pdfUri = data.getData();  // Get the URI of the selected PDF
+
+            // Persist URI permission
+            try {
+                requireContext().getContentResolver().takePersistableUriPermission(
+                        pdfUri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            } catch (SecurityException e) {
+                Toast.makeText(getContext(), "Failed to take persistable permission: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+
             Toast.makeText(getContext(), "PDF selected: " + pdfUri, Toast.LENGTH_SHORT).show();
         }
     }
+
 }

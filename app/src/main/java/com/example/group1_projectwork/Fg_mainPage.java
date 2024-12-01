@@ -52,9 +52,18 @@ public class Fg_mainPage extends Fragment {
             Book clickedBook = books.get(position);
             String pdfUri = clickedBook.getPdfUri(); // Get the existing URI from the database
 
+            // Validate if the URI is accessible before opening
+            try {
+                requireContext().getContentResolver().takePersistableUriPermission(
+                        Uri.parse(pdfUri), Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            } catch (SecurityException e) {
+                Log.e("Fg_mainPage", "Failed to take persistable permission for URI: " + pdfUri, e);
+            }
+
             // Open the PDF using the existing URI
             openPDF(pdfUri);
         });
+
 
         // Initialize the SharedViewModel
         sharedViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
@@ -115,17 +124,28 @@ public class Fg_mainPage extends Fragment {
 
     public void openPDF(String pdfUri) {
         try {
-            Intent intent = new Intent(Intent.ACTION_VIEW);
-            intent.setDataAndType(Uri.parse(pdfUri), "application/pdf");
-            intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY | Intent.FLAG_GRANT_READ_URI_PERMISSION);
-            intent.setPackage("com.google.android.apps.docs"); // Drive PDF Viewer
+            Uri contentUri = Uri.parse(pdfUri);
 
+            // Validate if the app has access to this URI
+            requireContext().getContentResolver().takePersistableUriPermission(
+                    contentUri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+            // Create an intent to open the PDF
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setDataAndType(contentUri, "application/pdf");
+            intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+            // Specify Google Drive PDF Viewer as the app to handle the intent
+            intent.setPackage("com.google.android.apps.docs");
+
+            // Start the activity
             startActivity(intent);
         } catch (Exception e) {
             // Prompt user to install a PDF Viewer
-            Toast.makeText(requireContext(), "Please install a PDF viewer to open this file.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(requireContext(), "Error opening PDF: " + e.getMessage(), Toast.LENGTH_SHORT).show();
         }
     }
+
 
 
 }
