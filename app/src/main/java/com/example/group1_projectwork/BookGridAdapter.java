@@ -1,6 +1,8 @@
 package com.example.group1_projectwork;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +11,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.core.content.FileProvider;
+
+import java.io.File;
 import java.util.List;
 
 public class BookGridAdapter extends BaseAdapter {
@@ -85,4 +90,6 @@ public class BookGridAdapter extends BaseAdapter {
         TextView authorTextView;
         ImageView deleteButton;
     }
+
+
 }
