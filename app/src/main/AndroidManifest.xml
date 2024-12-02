@@ -36,7 +36,7 @@
 
         <!-- Main screen activity -->
         <activity android:name=".MainScreen" android:exported="true" />
-        <activity android:name=".PdfViewActivity" android:label="PDF Viewer" />
+
 
         <provider
             android:name="androidx.core.content.FileProvider"
