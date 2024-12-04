@@ -132,7 +132,6 @@
             android:id="@+id/helpButton"
             android:layout_width="340dp"
             android:layout_height="36dp"
-            android:onClick="helpPage"
             android:layout_gravity="center_horizontal"
             android:background="@drawable/add_button_shape"
             android:fontFamily="@font/montserrat_bold"

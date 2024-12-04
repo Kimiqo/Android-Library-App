@@ -194,13 +194,4 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         return username;
     }
 
-    public Cursor searchBooks(String query) {
-        SQLiteDatabase db = this.getReadableDatabase();
-        String searchQuery = "SELECT * FROM books WHERE title LIKE ? OR author LIKE ?";
-        String wildcardQuery = "%" + query + "%";
-        return db.rawQuery(searchQuery, new String[]{wildcardQuery, wildcardQuery});
-    }
-
-
-
 }

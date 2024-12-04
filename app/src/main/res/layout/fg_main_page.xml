@@ -34,7 +34,8 @@
         android:paddingTop="64dp"
         android:paddingBottom="16dp"
         android:numColumns="3"
-        android:horizontalSpacing="8dp"
-        android:verticalSpacing="8dp"
+        android:layout_marginHorizontal="10dp"
+        android:horizontalSpacing="10dp"
+        android:verticalSpacing="10dp"
         android:stretchMode="columnWidth" />
 </FrameLayout>

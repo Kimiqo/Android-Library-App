@@ -15,13 +15,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import androidx.appcompat.app.AlertDialog;
 import android.widget.ImageView;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.AppCompatButton;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
@@ -30,8 +33,10 @@ public class Fg_settingsPage extends Fragment {
 
     private static final int STORAGE_PERMISSION_CODE = 101;
     private ImageView profileImageView;
-    private Button logOutButton, helpButton;
+    private Button logOutButton;
     private SQLiteHelper dbHelper;
+
+
 
     private final ActivityResultLauncher<Intent> galleryLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
@@ -75,21 +80,28 @@ public class Fg_settingsPage extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.dialog_profile_settings, container, false);
 
+        // Existing initialization code...
         profileImageView = view.findViewById(R.id.imageView2);
         logOutButton = view.findViewById(R.id.logOutButton);
         TextView settingsUsername = view.findViewById(R.id.settingsUsername);
+        Switch themeSwitch = view.findViewById(R.id.themeSwitch);
+        AppCompatButton helpButton = view.findViewById(R.id.helpButton);
 
-        // Initialize SQLiteHelper
+        // Handle Theme Switch
+        themeSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            showComingSoonDialog(themeSwitch);
+        });
+
+        // Rest of the existing initialization code...
         dbHelper = new SQLiteHelper(requireContext());
-
-        // Retrieve and display the username
         String username = dbHelper.getLoggedInUsername(requireContext());
         if (username != null) {
             settingsUsername.setText(username);
         } else {
-            settingsUsername.setText("Guest"); // Fallback if no user is logged in
+            settingsUsername.setText("Guest");
         }
 
+        helpButton.setOnClickListener(v -> showHelpDialog());
         profileImageView.setOnClickListener(v -> showImageOptionsDialog());
         logOutButton.setOnClickListener(v -> logOut());
 
@@ -134,7 +146,6 @@ public class Fg_settingsPage extends Fragment {
         }
     }
 
-
     public void logOut() {
         SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("UserPreferences", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -147,33 +158,27 @@ public class Fg_settingsPage extends Fragment {
         requireActivity().finish(); // Close the current activity
     }
 
+    private void showComingSoonDialog(Switch themeSwitch) {
+        new AlertDialog.Builder(getContext())
+                .setTitle("Coming Soon")
+                .setMessage("This feature is not yet available.")
+                .setPositiveButton("OK", (dialog, which) -> {
+                    dialog.dismiss();
+                    // Revert the Switch to its original state
+                    themeSwitch.setChecked(false);
+                })
+                .setCancelable(false)
+                .show();
+    }
 
-//    private void saveUserSettings() {
-//        String name = editTextName.getText().toString().trim();
-//        String email = editTextEmail.getText().toString().trim();
-//
-//        if (name.isEmpty() || email.isEmpty()) {
-//            Toast.makeText(requireContext(), "All fields must be filled", Toast.LENGTH_SHORT).show();
-//            return;
-//        }
-//
-//        User user = new User(name, email);
-//        // Save user settings in SQLite database
-//        if (dbHelper.addUser(user)) {
-//            Toast.makeText(requireContext(), "Settings updated successfully", Toast.LENGTH_SHORT).show();
-//        } else {
-//            Toast.makeText(requireContext(), "Failed to update settings", Toast.LENGTH_SHORT).show();
-//        }
-//    }
+    private void showHelpDialog() {
+        new AlertDialog.Builder(getContext())
+                .setTitle("Help")
+                .setMessage("This is the help section where you can find information about how to use the app. If you need assistance, please contact support. Tap on the 'Plus Button' on the mainPage to add the details required. Select 'Add' to confirm. Add a PDF if needed. Scroll downwards and select 'Log Out'.")
+                .setPositiveButton("OK", (dialog, which) -> dialog.dismiss())  // Dismiss the dialog when the button is clicked
+                .setCancelable(true)  // Allow the user to dismiss the dialog by tapping outside
+                .show();
+    }
 
-//    private void loadUserSettings() {
-//        // Load the user details from the SQLite database
-//        User currentUser = dbHelper.getUserByUsername("user123"); // Replace with actual username or logic to get current user
-//        if (currentUser != null) {
-//            settingsUsername.setText(currentUser.getUserName());
-//            editTextName.setText(currentUser.getUserName());
-//            editTextEmail.setText(currentUser.getPassWord());
-//        }
-//    }
 
 }
